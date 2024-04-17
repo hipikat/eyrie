@@ -1,0 +1,31 @@
+#
+# Vagrant/VirtualBox VM definitions
+#
+# (Use `vagrant status [box]` to see the list of defined boxes, and
+# `vagrant (up|destroy|provision) [box]` to manage their lifecycles.)
+#
+# - Leading underscores exclude boxes from the list of VM definitions
+# - The _base-box has all the essentials
+# - The 'packages' list is a list of packages to `apt get` during provisioning
+# - The 'states' list applies Salt states (.sls files) from etc/salt/root/
+# - The 'virtualbox' hash gets applied directly to the "virtualbox" provider
+#
+
+_base-box: &base
+  box: "debian/bookworm64"
+  memory: "2048"
+  swap: "1G"
+
+eyrie-dev: &eyriedev
+  <<: *base
+  states:
+    - nginx
+    - python
+    - node
+
+eyrie-everything:
+  <<: *eyriedev
+  packages:
+    - task-gnome-desktop
+  virtualbox:
+    gui: true

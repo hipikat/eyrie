@@ -1,0 +1,24 @@
+# Lockfiles
+package-lock.json
+
+# Building
+*.egg-info/
+.env
+
+# Logs
+npm-debug.log*
+
+# System
+var
+
+# Tools and libraries and junk
+node_modules
+*.tfstate*
+.terraform
+terraform.tfvars
+.vagrant
+
+# Transient/system files
+*.swp
+.DS_Store
+junk
