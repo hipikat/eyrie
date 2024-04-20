@@ -12,16 +12,16 @@
 #
 
 _base-box: &base
-  box: "debian/bookworm64"
+  box: "ubuntu/bionic64"
   memory: "2048"
   swap: "1G"
 
 eyrie-dev: &eyriedev
   <<: *base
-  states:
-    - nginx
-    - python
-    - node
+
+  # Include grains and minion configuration for the 'development' environment
+  environment:
+    - dev
 
 eyrie-everything:
   <<: *eyriedev

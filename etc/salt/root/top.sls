@@ -1,5 +1,0 @@
-base:
-  '*':
-    - salt
-    #- nginx
-    #- postgres

@@ -20,5 +20,6 @@ terraform.tfvars
 
 # Transient/system files
 *.swp
+*.log
 .DS_Store
 junk
