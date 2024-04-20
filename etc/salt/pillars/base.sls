@@ -1,4 +1,4 @@
 
 include:
   - salt_formula
-  - docker
+  - users

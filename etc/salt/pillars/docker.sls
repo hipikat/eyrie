@@ -1,7 +1,17 @@
-# /srv/pillar/docker.sls
+# # /srv/pillar/docker.sls
+# docker:
+#   enabled: true
+#   version: latest
+#   manage_packages: true
+#   users:
+#     - hipikat
+
+
+
 docker:
-  enabled: true
-  version: latest
-  manage_packages: true
-  users:
-    - hipikat
+  wanted:
+    - docker
+    # - compose
+  pkg:
+    docker:
+      use_upstream: repo

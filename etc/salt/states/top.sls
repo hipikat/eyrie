@@ -16,9 +16,7 @@
 base:
   '*':
     - base
-    - docker
 
 development:
   '*':
     - base
-    - docker

@@ -9,8 +9,7 @@ salt:
   #         git: https://github.com/saltstack-formulas/nginx-formula.git
   #       postgres:
   #         git: https://github.com/saltstack-formulas/postgres-formula.git
-  minion:
-    master_type: disable
+  clean_config_d_dir: false
 
 salt_formulas:
   git_opts:
@@ -22,7 +21,7 @@ salt_formulas:
       update: false
       options:
         rev: main
-        user: hipikat     # TODO: make dynamic
+        # user: root     # TODO: make dynamic
         identity: /etc/salt/keys/eyrie-github-ro    # TODO: make generatable
         # identity: /etc/salt/id_rsa-github-ro
         # identity: /path/to/.ssh/id_rsa_github_username
@@ -30,7 +29,7 @@ salt_formulas:
     development:
       update: true
       options:
-        rev: develop
+        rev: master
 
   # Options of the file.directory state that creates the directory where
   # the git repositories of the formulas are stored

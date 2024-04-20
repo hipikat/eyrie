@@ -38,6 +38,7 @@ Vagrant.configure("2") do |vagrant_config|
     vm.vm.synced_folder "./etc/salt/pillars", "/srv/pillar"
 
     # Link local executables into the guest's PATH
+    # TODO: link things individually because sudo's annoying secure_path setting
     vm.vm.synced_folder "bin/vagrant/", "/usr/local/bin/eyrie"
     vm.vm.provision "shell", inline: <<-SHELL
       echo "PATH=\"/usr/local/bin/eyrie:$PATH\"" | sudo tee -a /etc/environment
@@ -82,7 +83,7 @@ Vagrant.configure("2") do |vagrant_config|
 
       # Symlink Salt minion configuration and grains, based on the box's environment
       sudo ln -sf /vagrant/etc/salt/minion.vagrant.conf /etc/salt/minion
-      sudo ln -sf /vagrant/etc/salt/grains/base.yml /etc/salt/grains/01-base.yml
+      sudo ln -sf /vagrant/etc/salt/grains/base.sls /etc/salt/grains/01-base.sls
       #{vm_config['environment'].each_with_index.map { |env, index|
         "sudo ln -sf /vagrant/etc/salt/minion.d/#{env}.conf /etc/salt/minion.d/#{sprintf('%02d', index + 1)}-#{env}.conf; " +
         "sudo ln -sf /vagrant/etc/salt/grains/#{env}.sls /etc/salt/grains/#{sprintf('%02d', index + 2)}-#{env}.sls"
@@ -101,7 +102,7 @@ Vagrant.configure("2") do |vagrant_config|
       if ! command -v salt-call > /dev/null 2>&1; then
         echo "Installing SaltStack..."
         wget -O bootstrap-salt.sh https://bootstrap.saltproject.io
-        sh bootstrap-salt.sh -P -s 1 -D
+        sh bootstrap-salt.sh -P -s 1
       else
         echo "SaltStack already installed. Skipping installation."
       fi
@@ -116,7 +117,7 @@ Vagrant.configure("2") do |vagrant_config|
       echo "salt-minion is active and running."
 
       # Run salt-call with sudo
-      sudo salt-call --local state.apply --state-verbose=True --log-level=info
+      sudo salt-call --local state.apply --state-verbose=False
     SHELL
   end
 

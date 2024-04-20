@@ -7,3 +7,8 @@
 #   debug: true
 
 # environment: 'dev'
+
+docker:
+  wanted:
+    - docker
+    - compose

@@ -5,3 +5,4 @@
 include:
   - salt.formulas
   - salt.standalone
+  - users
