@@ -1,0 +1,76 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "eyrie"
+dynamic = ["version"]
+description = "This is my monorepo. It is for my things."
+readme = "README.md"
+requires-python = ">=3.12.2"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Ada Wright", email = "ada@hpk.io" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+]
+dependencies = []
+
+[project.urls]
+Documentation = "https://github.com/hipikat/eyrie#readme"
+Issues = "https://github.com/hipikat/eyrie/issues"
+Source = "https://github.com/hipikat/eyrie"
+
+[tool.hatch.version]
+path = "src/eyrie/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+]
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.12",]
+
+[tool.hatch.envs.types]
+dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/eyrie tests}"
+
+[tool.coverage.run]
+source_pkgs = ["eyrie", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/eyrie/__about__.py",
+]
+
+[tool.coverage.paths]
+eyrie = ["src/eyrie", "*/eyrie/src/eyrie"]
+tests = ["tests", "*/eyrie/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

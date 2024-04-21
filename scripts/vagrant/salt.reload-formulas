@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# Install Salt formulas and reload the salt-minion
+#
+
+sudo salt-call --local state.apply salt.formulas
+sudo salt-call --local state.apply salt.standalone
+sudo systemctl restart salt-minion

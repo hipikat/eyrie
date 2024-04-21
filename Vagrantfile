@@ -1,14 +1,14 @@
 #
 # This Vagrantfile tells Vagrant how to tell Virtualbox how to build boxes.
-# You can find the definitions for the boxes in etc/vagrants.yaml
+# You can find the definitions for the boxes in config/vagrants.yaml
 #
 # Boxes are seeded with Salt, and have states and settings applied, and packages
 # installed, according to the definitions in the vagrants.yaml file.
 #
 
-# Load config for the set of machines defined in etc/vagrants.yaml
+# Load config for the set of machines defined in config/vagrants.yaml
 require 'yaml'
-vagrants = YAML.load_file('etc/vagrants.yaml', aliases: true)
+vagrants = YAML.load_file('config/vagrants.yaml', aliases: true)
 
 Vagrant.configure("2") do |vagrant_config|
 
@@ -19,11 +19,10 @@ Vagrant.configure("2") do |vagrant_config|
     vm.vm.box = vm_config['box']
     vm.vm.hostname = "#{name}"
     vm.vm.provider "virtualbox" do |vb|
-      timestamp = Time.now.strftime("%Y-%m-%d-%H%M")
-      vb.name = "#{name}-#{timestamp}"
+      vb.name = "#{name}-#{Time.now.strftime("%Y-%m-%d-%H%M")}"
       vb.memory = vm_config['memory']
-      # vb.customize ["modifyvm", :id, "--accelerate3d", "off"]
-      # vb.customize ["modifyvm", :id, "--accelerate2dvideo", "off"]
+      vb.customize ["modifyvm", :id, "--accelerate3d", "off"]
+      vb.customize ["modifyvm", :id, "--accelerate2dvideo", "off"]
 
       # Apply additional VirtualBox settings
       if vm_config.has_key?("virtualbox")
@@ -34,14 +33,15 @@ Vagrant.configure("2") do |vagrant_config|
     end
 
     # Synchronise Salt states and pillars
-    vm.vm.synced_folder "./etc/salt/states", "/srv/salt"
-    vm.vm.synced_folder "./etc/salt/pillars", "/srv/pillar"
+    vm.vm.synced_folder "./config/salt/states", "/srv/salt"
+    vm.vm.synced_folder "./config/salt/pillars", "/srv/pillar"
 
-    # Link local executables into the guest's PATH
-    # TODO: link things individually because sudo's annoying secure_path setting
-    vm.vm.synced_folder "bin/vagrant/", "/usr/local/bin/eyrie"
     vm.vm.provision "shell", inline: <<-SHELL
-      echo "PATH=\"/usr/local/bin/eyrie:$PATH\"" | sudo tee -a /etc/environment
+
+      # Link local executables into the guest's PATH
+      for file in /vagrant/scripts/vagrant/*; do
+        [ -x "$file" ] && sudo ln -sf "$file" "/usr/local/bin/$(basename "$file")"
+      done
 
       # Set up a swap file if one doesn't already exist
       if [ ! -f /swapfile ]; then
@@ -49,7 +49,7 @@ Vagrant.configure("2") do |vagrant_config|
         sudo chmod 600 /swapfile
         sudo mkswap /swapfile
         sudo swapon /swapfile
-        echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab  # Ensure swap is re-enabled on boot
+        echo '/swapfile none swap sw 0 0' | sudo tee -a /config/fstab  # Ensure swap is re-enabled on boot
       else
         echo "Swap file already exists, skipping creation."
       fi
@@ -82,11 +82,11 @@ Vagrant.configure("2") do |vagrant_config|
       sudo mkdir -p /etc/salt/minion.d /etc/salt/grains /etc/salt/keys
 
       # Symlink Salt minion configuration and grains, based on the box's environment
-      sudo ln -sf /vagrant/etc/salt/minion.vagrant.conf /etc/salt/minion
-      sudo ln -sf /vagrant/etc/salt/grains/base.sls /etc/salt/grains/01-base.sls
+      sudo ln -sf /vagrant/config/salt/minion.vagrant.conf /etc/salt/minion
+      sudo ln -sf /vagrant/config/salt/grains/base.sls /etc/salt/grains/01-base.sls
       #{vm_config['environment'].each_with_index.map { |env, index|
-        "sudo ln -sf /vagrant/etc/salt/minion.d/#{env}.conf /etc/salt/minion.d/#{sprintf('%02d', index + 1)}-#{env}.conf; " +
-        "sudo ln -sf /vagrant/etc/salt/grains/#{env}.sls /etc/salt/grains/#{sprintf('%02d', index + 2)}-#{env}.sls"
+        "sudo ln -sf /vagrant/config/salt/minion.d/#{env}.conf /etc/salt/minion.d/#{sprintf('%02d', index + 1)}-#{env}.conf; " +
+        "sudo ln -sf /vagrant/config/salt/grains/#{env}.sls /etc/salt/grains/#{sprintf('%02d', index + 2)}-#{env}.sls"
       }.join("\n")}
 
       # Symlink a public key for salt-formula to access GitHub
@@ -109,14 +109,18 @@ Vagrant.configure("2") do |vagrant_config|
 
       # Restart Salt minion to apply configuration changes
       systemctl restart salt-minion
-      echo "Checking for salt-minion readiness..."
-      until sudo systemctl is-active --quiet salt-minion; do
-        echo "Waiting for salt-minion to start..."
-        sleep 2
-      done
-      echo "salt-minion is active and running."
+      # echo "Checking for salt-minion readiness..."
+      # until sudo systemctl is-active --quiet salt-minion; do
+      #   echo "Waiting for salt-minion to start..."
+      #   sleep 2
+      # done
+      # echo "salt-minion is active and running."
 
       # Run salt-call with sudo
+      # sudo salt-call --local state.apply salt.formulas --state-verbose=False
+      # sudo salt-call --local state.apply salt.standalone --state-verbose=False
+      # sudo systemctl restart salt-minion
+      salt.reload-formulas
       sudo salt-call --local state.apply --state-verbose=False
     SHELL
   end

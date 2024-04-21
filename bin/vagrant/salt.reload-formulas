@@ -1,5 +1,0 @@
-#!/bin/sh
-
-salt-call --local state.apply salt.formulas
-salt-call --local state.apply salt.standalone
-systemctl restart salt-minion

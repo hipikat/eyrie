@@ -7,12 +7,12 @@
 # - Leading underscores exclude boxes from the list of VM definitions
 # - The _base-box has all the essentials
 # - The 'packages' list is a list of packages to `apt get` during provisioning
-# - The 'states' list applies Salt states (.sls files) from etc/salt/root/
+# - The 'states' list applies Salt states (.sls files) from config/salt/states/
 # - The 'virtualbox' hash gets applied directly to the "virtualbox" provider
 #
 
 _base-box: &base
-  box: "ubuntu/bionic64"
+  box: "ubuntu/jammy64"
   memory: "2048"
   swap: "1G"
 

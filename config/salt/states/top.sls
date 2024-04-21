@@ -20,3 +20,4 @@ base:
 development:
   '*':
     - base
+    - dev
