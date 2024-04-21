@@ -10,9 +10,7 @@ readme = "README.md"
 requires-python = ">=3.12.2"
 license = "MIT"
 keywords = []
-authors = [
-  { name = "Ada Wright", email = "ada@hpk.io" },
-]
+authors = [{ name = "Ada Wright", email = "ada@hpk.io" },]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
@@ -25,6 +23,20 @@ dependencies = []
 Documentation = "https://github.com/hipikat/eyrie#readme"
 Issues = "https://github.com/hipikat/eyrie/issues"
 Source = "https://github.com/hipikat/eyrie"
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+wagtail = "^6.0.2"
+
+# [build-system]
+# requires = ["poetry-core"]
+# build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.23.0"
 
 [tool.hatch.version]
 path = "src/eyrie/__about__.py"

@@ -3,6 +3,9 @@
 # Install Salt formulas and reload the salt-minion
 #
 
-sudo salt-call --local state.apply salt.formulas
-sudo salt-call --local state.apply salt.standalone
+echo "Checking Salt formulas..."
+sudo salt-call --local state.apply salt.formulas --state-verbose=False
+echo "Updating Salt's minion configuration..."
+sudo salt-call --local state.apply salt.standalone --state-verbose=False
+echo "Restarting salt-minion..."
 sudo systemctl restart salt-minion

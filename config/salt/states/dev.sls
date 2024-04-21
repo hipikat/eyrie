@@ -1,4 +1,4 @@
 
 include:
-  - docker
   - python
+  - docker

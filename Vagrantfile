@@ -15,9 +15,16 @@ Vagrant.configure("2") do |vagrant_config|
   # Creates a Vagrant machine definition
   def setup_base_vm(vm, name, vm_config)
 
-    # Configure Vagrant definition name, hostname, VirtualBox name and memory
+    # Configure vm from config
+    project_root = vm_config.key?('project_root') ? vm_config['project_root'] : '/vagrant'
+    vm.vm.synced_folder "./", project_root
     vm.vm.box = vm_config['box']
     vm.vm.hostname = "#{name}"
+    # vm.vm.network "public_network"
+    vm.vm.network "private_network", ip: vm_config['private_ip'], virtualbox__intnet: 'intnet'
+    vm_config['forwarded_ports'].each do |guest_port, host_port|
+      vm.vm.network "forwarded_port", guest: guest_port, host: host_port
+    end
     vm.vm.provider "virtualbox" do |vb|
       vb.name = "#{name}-#{Time.now.strftime("%Y-%m-%d-%H%M")}"
       vb.memory = vm_config['memory']
@@ -36,15 +43,23 @@ Vagrant.configure("2") do |vagrant_config|
     vm.vm.synced_folder "./config/salt/states", "/srv/salt"
     vm.vm.synced_folder "./config/salt/pillars", "/srv/pillar"
 
+    # Sync folders listed in the vm config
+    if vm_config.key?('folder_mappings')
+      vm_config['folder_mappings'].each do |host_folder, vm_folder|
+        vm.vm.synced_folder host_folder, vm_folder
+      end
+    end
+
     vm.vm.provision "shell", inline: <<-SHELL
 
       # Link local executables into the guest's PATH
-      for file in /vagrant/scripts/vagrant/*; do
+      for file in #{project_root}/scripts/vagrant/*; do
         [ -x "$file" ] && sudo ln -sf "$file" "/usr/local/bin/$(basename "$file")"
       done
 
       # Set up a swap file if one doesn't already exist
       if [ ! -f /swapfile ]; then
+        echo "Creating #{vm_config['swap']} swapfile..."
         sudo fallocate -l #{vm_config['swap']} /swapfile
         sudo chmod 600 /swapfile
         sudo mkswap /swapfile
@@ -75,32 +90,41 @@ Vagrant.configure("2") do |vagrant_config|
       fi
       # Install system pacakges required for bootstrapping Salt
       # TODO: get rid of some of these once you have packages installing with Salt
-      apt-get install -y build-essential dkms linux-headers-$(uname -r) \
-                         wget gnupg git screen python3-git python3-pygit2
+      apt-get install -y \
+        build-essential \
+        dkms \
+        linux-headers-$(uname -r) \
+        wget \
+        gnupg \
+        git \
+        screen \
+        python3-git \
+        python3-pygit2
 
       # Create directories for Salt configuration
       sudo mkdir -p /etc/salt/minion.d /etc/salt/grains /etc/salt/keys
 
       # Symlink Salt minion configuration and grains, based on the box's environment
-      sudo ln -sf /vagrant/config/salt/minion.vagrant.conf /etc/salt/minion
-      sudo ln -sf /vagrant/config/salt/grains/base.sls /etc/salt/grains/01-base.sls
+      sudo ln -sf #{project_root}/config/salt/minion.vagrant.conf /etc/salt/minion
+      sudo ln -sf #{project_root}/config/salt/grains/base.sls /etc/salt/grains/01-base.sls
       #{vm_config['environment'].each_with_index.map { |env, index|
-        "sudo ln -sf /vagrant/config/salt/minion.d/#{env}.conf /etc/salt/minion.d/#{sprintf('%02d', index + 1)}-#{env}.conf; " +
-        "sudo ln -sf /vagrant/config/salt/grains/#{env}.sls /etc/salt/grains/#{sprintf('%02d', index + 2)}-#{env}.sls"
+        "sudo ln -sf #{project_root}/config/salt/minion.d/#{env}.conf /etc/salt/minion.d/#{sprintf('%02d', index + 1)}-#{env}.conf; " +
+        "sudo ln -sf #{project_root}/config/salt/grains/#{env}.sls /etc/salt/grains/#{sprintf('%02d', index + 2)}-#{env}.sls"
       }.join("\n")}
 
       # Symlink a public key for salt-formula to access GitHub
       # TODO: ensure it exists before any of this gets underway
-      sudo ln -sf /vagrant/var/keys/eyrie-github-ro{,.pub} /etc/salt/keys/
+      sudo ln -sf #{project_root}/var/keys/eyrie-github-ro{,.pub} /etc/salt/keys/
 
       # Clone salt-formula, if it hasn't been already
       if [ ! -d "/srv/formulas/salt-formula" ]; then
+        echo "Cloning saltstack-formula into /srv/formulas/..."
         git clone -b v1.12.0 https://github.com/saltstack-formulas/salt-formula.git /srv/formulas/salt-formula
       fi
 
       # Check if SaltStack is already installed and skip installation if it is
       if ! command -v salt-call > /dev/null 2>&1; then
-        echo "Installing SaltStack..."
+        echo "Installing Salt minion..."
         wget -O bootstrap-salt.sh https://bootstrap.saltproject.io
         sh bootstrap-salt.sh -P -s 1
       else
@@ -108,7 +132,7 @@ Vagrant.configure("2") do |vagrant_config|
       fi
 
       # Restart Salt minion to apply configuration changes
-      systemctl restart salt-minion
+      # systemctl restart salt-minion
       # echo "Checking for salt-minion readiness..."
       # until sudo systemctl is-active --quiet salt-minion; do
       #   echo "Waiting for salt-minion to start..."
@@ -116,11 +140,9 @@ Vagrant.configure("2") do |vagrant_config|
       # done
       # echo "salt-minion is active and running."
 
-      # Run salt-call with sudo
-      # sudo salt-call --local state.apply salt.formulas --state-verbose=False
-      # sudo salt-call --local state.apply salt.standalone --state-verbose=False
-      # sudo systemctl restart salt-minion
+      # Apply Highstate
       salt.reload-formulas
+      echo "Applying Salt Highstate..."
       sudo salt-call --local state.apply --state-verbose=False
     SHELL
   end
