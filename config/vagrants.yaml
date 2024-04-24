@@ -16,14 +16,14 @@ _base-box: &base
   memory: "2048"
   swap: "1G"
   project_root: /app
+
 eyrie-dev: &eyriedev
   <<: *base
-
   private_ip: 192.168.33.30
   forwarded_ports:
-    - [22, 2030]
-    - [80, 8030]
-    - [443, 8043]
+    22: 2030
+    80: 8030
+    443: 8043
   # Include grains and minion configuration for the 'development' environment
   environment:
     - dev

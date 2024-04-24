@@ -20,11 +20,12 @@ Vagrant.configure("2") do |vagrant_config|
     vm.vm.synced_folder "./", project_root
     vm.vm.box = vm_config['box']
     vm.vm.hostname = "#{name}"
-    # vm.vm.network "public_network"
     vm.vm.network "private_network", ip: vm_config['private_ip'], virtualbox__intnet: 'intnet'
-    vm_config['forwarded_ports'].each do |guest_port, host_port|
+
+    do_hash_pairs(vm_config['forwarded_ports']) do |guest_port, host_port|
       vm.vm.network "forwarded_port", guest: guest_port, host: host_port
     end
+
     vm.vm.provider "virtualbox" do |vb|
       vb.name = "#{name}-#{Time.now.strftime("%Y-%m-%d-%H%M")}"
       vb.memory = vm_config['memory']
@@ -32,11 +33,10 @@ Vagrant.configure("2") do |vagrant_config|
       vb.customize ["modifyvm", :id, "--accelerate2dvideo", "off"]
 
       # Apply additional VirtualBox settings
-      if vm_config.has_key?("virtualbox")
-        vm_config["virtualbox"].each do |vbox_setting, value|
-          vb.public_send("#{vbox_setting}=", value)
-        end
+      do_hash_pairs(vm_config['virtualbox']) do |vbox_setting, value|
+        vb.public_send("#{vbox_setting}=", value)
       end
+
     end
 
     # Synchronise Salt states and pillars
@@ -44,10 +44,8 @@ Vagrant.configure("2") do |vagrant_config|
     vm.vm.synced_folder "./config/salt/pillars", "/srv/pillar"
 
     # Sync folders listed in the vm config
-    if vm_config.key?('folder_mappings')
-      vm_config['folder_mappings'].each do |host_folder, vm_folder|
-        vm.vm.synced_folder host_folder, vm_folder
-      end
+    do_hash_pairs(vm_config['folder_mappings']) do |host_folder, vm_folder|
+      vm.vm.synced_folder host_folder, vm_folder
     end
 
     vm.vm.provision "shell", inline: <<-SHELL
@@ -88,6 +86,7 @@ Vagrant.configure("2") do |vagrant_config|
         fi
         echo "Not updating apt cache; it's only $apt_cache_age"
       fi
+
       # Install system pacakges required for bootstrapping Salt
       # TODO: get rid of some of these once you have packages installing with Salt
       apt-get install -y \
@@ -164,3 +163,8 @@ Vagrant.configure("2") do |vagrant_config|
   end
 end
 
+def do_hash_pairs(hash, &block)
+  if hash
+    hash.each(&block)
+  end
+end
