@@ -1,3 +1,6 @@
+# Managed applications
+src/picata
+
 # Lockfiles
 package-lock.json
 
