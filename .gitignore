@@ -17,6 +17,7 @@ node_modules
 .terraform
 terraform.tfvars
 .vagrant
+.coverage
 
 # Transient/system files
 *.swp
