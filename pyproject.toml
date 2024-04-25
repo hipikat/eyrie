@@ -58,34 +58,6 @@ exclude_lines = [
 ]
 
 #
-# versioningit - https://github.com/jwodder/versioningit
-#
-# [tool.hatch.version]
-# source = "versioningit"
-
-# [tool.versioningit]
-# default-version = "0.0.0+unknown"
-
-# [tool.versioningit.format]
-# distance = "{next_version}.dev{distance}+{vcs}{rev}"
-# dirty = "{version}+dirty"
-# distance-dirty = "{next_version}.dev{distance}+{vcs}{rev}.dirty"
-
-# [tool.versioningit.format]
-# # Format used when there have been commits since the most recent tag:
-# distance = "{base_version}.post{distance}+{vcs}{rev}"
-# # Example formatted version: 1.2.3.post42+ge174a1f
-
-# # Format used when there are uncommitted changes:
-# dirty = "{base_version}+d{build_date:%Y%m%d}"
-# # Example formatted version: 1.2.3+d20230922
-
-# # Format used when there are both commits and uncommitted changes:
-# distance-dirty = "{base_version}.post{distance}+{vcs}{rev}.d{build_date:%Y%m%d}"
-# # Example formatted version: 1.2.3.post42+ge174a1f.d20230922
-
-
-#
 # Poetry - https://python-poetry.org/
 # Only used for dependency management
 #
@@ -98,7 +70,6 @@ wagtail = "^6.0.2"
 click = "^8.1.7"
 versioningit = "^3.1.0"
 
-
 [tool.poetry.group.dev.dependencies]
 ipython = "^8.23.0"
 
@@ -108,7 +79,6 @@ ipython = "^8.23.0"
 [tool.hatch]
 env.virtual = "var/venvs"
 version.source = "versioningit"
-
 
 # Environment: Default
 [tool.hatch.envs.default]
@@ -130,7 +100,6 @@ cov = [
   "cov-report",
 ]
 
-
 # Environment: Test
 [tool.hatch.envs.test]
 dependencies = [
@@ -142,7 +111,6 @@ dependencies = [
 [tool.hatch.envs.test.scripts]
 cov = 'pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=pkg --cov=tests'
 
-
 # Environment: Types
 [tool.hatch.envs.types]
 dependencies = [
@@ -151,20 +119,22 @@ dependencies = [
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/eyrie tests}"
 
-
 # Environment matrix
 # https://hatch.pypa.io/1.9/config/environment/advanced/#matrix
 [[tool.hatch.envs.all.matrix]]
 python = ["3.12",]
-
+wagtail = ["6.0",]
 
 #
-# versioningit - TODO:url
+# versioningit - https://versioningit.readthedocs.io/
 #
 [tool.versioningit]
 default-version = "0.0.0+unknown"
 
 [tool.versioningit.format]
+# When there have been commits since the most recent tag:
 distance = "{next_version}.dev{distance}+{vcs}{rev}"
+# When there are uncommitted changes:
 dirty = "{version}+dirty"
+# When there are both commits and uncommitted changes:
 distance-dirty = "{next_version}.dev{distance}+{vcs}{rev}.dirty"
