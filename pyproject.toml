@@ -6,7 +6,11 @@
 [build-system]
 # requires = ["poetry-core"]
 # build-backend = "poetry.core.masonry.api"
-requires = ["hatchling", "hatch-regex-commit"]
+requires = [
+  "hatchling",
+  # "hatch-regex-commit",
+  "versioningit",
+]
 build-backend = "hatchling.build"
 
 [project]
@@ -54,6 +58,11 @@ exclude_lines = [
 ]
 
 #
+# versioningit - https://github.com/jwodder/versioningit
+#
+[tool.versioningit]
+
+#
 # Poetry - https://python-poetry.org/
 # Only used for dependency management
 #
@@ -64,6 +73,7 @@ package-mode = false
 python = "^3.12"
 wagtail = "^6.0.2"
 click = "^8.1.7"
+versioningit = "^3.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -73,11 +83,11 @@ ipython = "^8.23.0"
 # Hatch configuration - https://hatch.pypa.io/
 #
 [tool.hatch.version]
-source = "regex_commit"
-path = "src/eyrie/__about__.py"
-commit_extra_args = ["-e"]
-check_dirty = false
-tag = false
+source = "versioningit"
+# source = "regex_commit"
+# path = "src/eyrie/__about__.py"
+# check_dirty = false
+# tag = false
 
 [tool.hatch.env]
 virtual = "var/venvs"
