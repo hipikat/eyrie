@@ -1,11 +1,18 @@
+#
+# Python build system configuration
+# https://peps.python.org/pep-0518/
+#
+
 [build-system]
+# requires = ["poetry-core"]
+# build-backend = "poetry.core.masonry.api"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
 name = "eyrie"
 dynamic = ["version"]
-description = "This is my monorepo. It is for my things."
+description = "This is where I sit beneath the clouds."
 readme = "README.md"
 requires-python = ">=3.12.2"
 license = "MIT"
@@ -24,50 +31,9 @@ Documentation = "https://github.com/hipikat/eyrie#readme"
 Issues = "https://github.com/hipikat/eyrie/issues"
 Source = "https://github.com/hipikat/eyrie"
 
-[tool.poetry]
-package-mode = false
-
-[tool.poetry.dependencies]
-python = "^3.12"
-wagtail = "^6.0.2"
-
-# [build-system]
-# requires = ["poetry-core"]
-# build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.group.dev.dependencies]
-ipython = "^8.23.0"
-
-[tool.hatch.version]
-path = "src/eyrie/__about__.py"
-
-[tool.hatch.envs.default]
-dependencies = [
-  "coverage[toml]>=6.5",
-  "pytest",
-]
-[tool.hatch.envs.default.scripts]
-test = "pytest {args:tests}"
-test-cov = "coverage run -m pytest {args:tests}"
-cov-report = [
-  "- coverage combine",
-  "coverage report",
-]
-cov = [
-  "test-cov",
-  "cov-report",
-]
-
-[[tool.hatch.envs.all.matrix]]
-python = ["3.12",]
-
-[tool.hatch.envs.types]
-dependencies = [
-  "mypy>=1.0.0",
-]
-[tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/eyrie tests}"
-
+#
+# Coverage - https://coverage.readthedocs.io/
+#
 [tool.coverage.run]
 source_pkgs = ["eyrie", "tests"]
 branch = true
@@ -86,3 +52,76 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+#
+# Poetry - https://python-poetry.org/
+# Only used for dependency management
+#
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+wagtail = "^6.0.2"
+click = "^8.1.7"
+
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.23.0"
+
+#
+# Hatch configuration - https://hatch.pypa.io/
+#
+[tool.hatch.version]
+path = "src/eyrie/__about__.py"
+
+[tool.hatch.env]
+virtual = "var/venvs"
+
+
+# Environment: Default
+[tool.hatch.envs.default]
+path = "var/venvs/eyrie-dev"
+dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+]
+
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+
+# Environment: Test
+[tool.hatch.envs.test]
+dependencies = [
+  "coverage[toml]",
+  "pytest",
+  "pytest-cov",
+]
+
+[tool.hatch.envs.test.scripts]
+cov = 'pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=pkg --cov=tests'
+
+
+# Environment: Types
+[tool.hatch.envs.types]
+dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/eyrie tests}"
+
+
+# Environment matrix
+# https://hatch.pypa.io/1.9/config/environment/advanced/#matrix
+[[tool.hatch.envs.all.matrix]]
+python = ["3.12",]
