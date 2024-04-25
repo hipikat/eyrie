@@ -2,13 +2,12 @@
 
 -----
 
-Just a personal project in which I try to set up a little space for myself on
-the internet, and learn a bunch of stuff as I go.
+Wherein I set up a little space for myself on the web, and learn a bunch of stuff as I go.
 
 ## Installation
 
 ```
-brew install vagrant
+brew install vagrant hatch poetry
 brew install --cask virtualbox
 vagrant up eyrie-dev
 ```
