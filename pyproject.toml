@@ -60,18 +60,29 @@ exclude_lines = [
 #
 # versioningit - https://github.com/jwodder/versioningit
 #
-[tool.versioningit.format]
-# Format used when there have been commits since the most recent tag:
-distance = "{base_version}.post{distance}+{vcs}{rev}"
-# Example formatted version: 1.2.3.post42+ge174a1f
+# [tool.hatch.version]
+# source = "versioningit"
 
-# Format used when there are uncommitted changes:
-dirty = "{base_version}+d{build_date:%Y%m%d}"
-# Example formatted version: 1.2.3+d20230922
+# [tool.versioningit]
+# default-version = "0.0.0+unknown"
 
-# Format used when there are both commits and uncommitted changes:
-distance-dirty = "{base_version}.post{distance}+{vcs}{rev}.d{build_date:%Y%m%d}"
-# Example formatted version: 1.2.3.post42+ge174a1f.d20230922
+# [tool.versioningit.format]
+# distance = "{next_version}.dev{distance}+{vcs}{rev}"
+# dirty = "{version}+dirty"
+# distance-dirty = "{next_version}.dev{distance}+{vcs}{rev}.dirty"
+
+# [tool.versioningit.format]
+# # Format used when there have been commits since the most recent tag:
+# distance = "{base_version}.post{distance}+{vcs}{rev}"
+# # Example formatted version: 1.2.3.post42+ge174a1f
+
+# # Format used when there are uncommitted changes:
+# dirty = "{base_version}+d{build_date:%Y%m%d}"
+# # Example formatted version: 1.2.3+d20230922
+
+# # Format used when there are both commits and uncommitted changes:
+# distance-dirty = "{base_version}.post{distance}+{vcs}{rev}.d{build_date:%Y%m%d}"
+# # Example formatted version: 1.2.3.post42+ge174a1f.d20230922
 
 
 #
@@ -94,15 +105,9 @@ ipython = "^8.23.0"
 #
 # Hatch configuration - https://hatch.pypa.io/
 #
-[tool.hatch.version]
-source = "versioningit"
-# source = "regex_commit"
-# path = "src/eyrie/__about__.py"
-# check_dirty = false
-# tag = false
-
-[tool.hatch.env]
-virtual = "var/venvs"
+[tool.hatch]
+env.virtual = "var/venvs"
+version.source = "versioningit"
 
 
 # Environment: Default
@@ -151,3 +156,15 @@ check = "mypy --install-types --non-interactive {args:src/eyrie tests}"
 # https://hatch.pypa.io/1.9/config/environment/advanced/#matrix
 [[tool.hatch.envs.all.matrix]]
 python = ["3.12",]
+
+
+#
+# versioningit - TODO:url
+#
+[tool.versioningit]
+default-version = "0.0.0+unknown"
+
+[tool.versioningit.format]
+distance = "{next_version}.dev{distance}+{vcs}{rev}"
+dirty = "{version}+dirty"
+distance-dirty = "{next_version}.dev{distance}+{vcs}{rev}.dirty"
