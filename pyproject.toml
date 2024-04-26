@@ -4,36 +4,35 @@
 #
 
 [build-system]
-# requires = ["poetry-core"]
-# build-backend = "poetry.core.masonry.api"
-requires = [
-  "hatchling",
-  # "hatch-regex-commit",
-  "versioningit",
-]
-build-backend = "hatchling.build"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [project]
 name = "eyrie"
 dynamic = ["version"]
-description = "This is where I sit beneath the clouds."
+description = "Your SDLC in a bin."
 readme = "README.md"
-requires-python = ">=3.12.2"
-license = "MIT"
+requires-python = "<4.0,>=3.12"
+license = {text = "MIT"}
 keywords = []
-authors = [{ name = "Ada Wright", email = "ada@hpk.io" },]
+authors = [
+    { name = "Ada Wright", email = "ada@hpk.io" },
+]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
-dependencies = []
+package-mode = false
 
 [project.urls]
 Documentation = "https://github.com/hipikat/eyrie#readme"
 Issues = "https://github.com/hipikat/eyrie/issues"
 Source = "https://github.com/hipikat/eyrie"
+
+[tool.pdm.entry_points."console_scripts"]
+eyrie-cli = "eyrie.cli:main"
 
 #
 # Coverage - https://coverage.readthedocs.io/
@@ -58,71 +57,87 @@ exclude_lines = [
 ]
 
 #
-# Poetry - https://python-poetry.org/
-# Only used for dependency management
+# PDM - https://pdm-project.org/
 #
-[tool.poetry]
-package-mode = false
+[tool.pdm]
+distribution = true
 
-[tool.poetry.dependencies]
-python = "^3.12"
-click = "^8.1.7"
-versioningit = "^3.1.0"
-
-[tool.poetry.group.dev.dependencies]
-ipython = "^8.23.0"
-
-#
-# Hatch configuration - https://hatch.pypa.io/
-#
-[tool.hatch]
-env.virtual = "var/venvs"
-version.source = "versioningit"
-
-# Environment: Default
-[tool.hatch.envs.default]
-path = "var/venvs/eyrie-dev"
-dependencies = [
-  "coverage[toml]>=6.5",
-  "pytest",
+[tool.pdm.dev-dependencies]
+dev = [
+    "ipython<9.0.0,>=8.23.0",
+    "versioningit>=3.1.0",
 ]
 
-[tool.hatch.envs.default.scripts]
-test = "pytest {args:tests}"
-test-cov = "coverage run -m pytest {args:tests}"
-cov-report = [
-  "- coverage combine",
-  "coverage report",
-]
-cov = [
-  "test-cov",
-  "cov-report",
-]
+[tool.pdm.build]
+includes = []
 
-# Environment: Test
-[tool.hatch.envs.test]
-dependencies = [
-  "coverage[toml]",
-  "pytest",
-  "pytest-cov",
-]
 
-[tool.hatch.envs.test.scripts]
-cov = 'pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=pkg --cov=tests'
+# #
+# # Poetry - https://python-poetry.org/
+# # Only used for dependency management
+# #
+# [tool.poetry]
+# package-mode = false
 
-# Environment: Types
-[tool.hatch.envs.types]
-dependencies = [
-  "mypy>=1.0.0",
-]
-[tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/eyrie tests}"
+# [tool.poetry.dependencies]
+# python = "^3.12"
+# click = "^8.1.7"
+# versioningit = "^3.1.0"
 
-# Environment matrix
-# https://hatch.pypa.io/1.9/config/environment/advanced/#matrix
-[[tool.hatch.envs.all.matrix]]
-python = ["3.12",]
-wagtail = ["6.0",]
+# [tool.poetry.group.dev.dependencies]
+# ipython = "^8.23.0"
+
+# #
+# # Hatch configuration - https://hatch.pypa.io/
+# #
+# [tool.hatch]
+# env.virtual = "var/venvs"
+# version.source = "versioningit"
+
+# # Environment: Default
+# [tool.hatch.envs.default]
+# path = "var/venvs/eyrie-dev"
+# dependencies = [
+#   "coverage[toml]>=6.5",
+#   "pytest",
+# ]
+
+# [tool.hatch.envs.default.scripts]
+# test = "pytest {args:tests}"
+# test-cov = "coverage run -m pytest {args:tests}"
+# cov-report = [
+#   "- coverage combine",
+#   "coverage report",
+# ]
+# cov = [
+#   "test-cov",
+#   "cov-report",
+# ]
+
+# # Environment: Test
+# [tool.hatch.envs.test]
+# dependencies = [
+#   "coverage[toml]",
+#   "pytest",
+#   "pytest-cov",
+# ]
+
+# [tool.hatch.envs.test.scripts]
+# cov = 'pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=pkg --cov=tests'
+
+# # Environment: Types
+# [tool.hatch.envs.types]
+# dependencies = [
+#   "mypy>=1.0.0",
+# ]
+# [tool.hatch.envs.types.scripts]
+# check = "mypy --install-types --non-interactive {args:src/eyrie tests}"
+
+# # Environment matrix
+# # https://hatch.pypa.io/1.9/config/environment/advanced/#matrix
+# [[tool.hatch.envs.all.matrix]]
+# python = ["3.12",]
+# wagtail = ["6.0",]
 
 #
 # versioningit - https://versioningit.readthedocs.io/
@@ -137,3 +152,11 @@ distance = "{next_version}.dev{distance}+{vcs}{rev}"
 dirty = "{version}+dirty"
 # When there are both commits and uncommitted changes:
 distance-dirty = "{next_version}.dev{distance}+{vcs}{rev}.dirty"
+
+[tool.versioningit.vcs]
+# The method key:
+method = "git"  # <- The method name
+
+# Parameters to pass to the method:
+match = ["v*"]
+default-tag = "0.0.1"
