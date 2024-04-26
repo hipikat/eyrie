@@ -154,8 +154,7 @@ dirty = "{version}+dirty"
 distance-dirty = "{next_version}.dev{distance}+{vcs}{rev}.dirty"
 
 [tool.versioningit.vcs]
-# The method key:
-method = "git"  # <- The method name
+method = "git"
 
 # Parameters to pass to the method:
 match = ["v*"]
