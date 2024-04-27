@@ -20,8 +20,6 @@ if echo "$current_version" | grep -qE "$stable_version_regex"; then
         # Create a new git tag
         git tag -a "v$current_version" -m "Release version $current_version"
         echo "New tag created for version $current_version"
-        # Commented out the push command to allow manual push of tags
-        # git push --tags
     fi
 fi
 
