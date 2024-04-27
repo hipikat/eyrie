@@ -57,7 +57,7 @@ exclude_lines = [
 ]
 
 #
-# PDM - https://pdm-project.org/
+# PDM (Python Package Management) - https://pdm-project.org/
 #
 [tool.pdm]
 distribution = true
@@ -70,74 +70,6 @@ dev = [
 
 [tool.pdm.build]
 includes = []
-
-
-# #
-# # Poetry - https://python-poetry.org/
-# # Only used for dependency management
-# #
-# [tool.poetry]
-# package-mode = false
-
-# [tool.poetry.dependencies]
-# python = "^3.12"
-# click = "^8.1.7"
-# versioningit = "^3.1.0"
-
-# [tool.poetry.group.dev.dependencies]
-# ipython = "^8.23.0"
-
-# #
-# # Hatch configuration - https://hatch.pypa.io/
-# #
-# [tool.hatch]
-# env.virtual = "var/venvs"
-# version.source = "versioningit"
-
-# # Environment: Default
-# [tool.hatch.envs.default]
-# path = "var/venvs/eyrie-dev"
-# dependencies = [
-#   "coverage[toml]>=6.5",
-#   "pytest",
-# ]
-
-# [tool.hatch.envs.default.scripts]
-# test = "pytest {args:tests}"
-# test-cov = "coverage run -m pytest {args:tests}"
-# cov-report = [
-#   "- coverage combine",
-#   "coverage report",
-# ]
-# cov = [
-#   "test-cov",
-#   "cov-report",
-# ]
-
-# # Environment: Test
-# [tool.hatch.envs.test]
-# dependencies = [
-#   "coverage[toml]",
-#   "pytest",
-#   "pytest-cov",
-# ]
-
-# [tool.hatch.envs.test.scripts]
-# cov = 'pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=pkg --cov=tests'
-
-# # Environment: Types
-# [tool.hatch.envs.types]
-# dependencies = [
-#   "mypy>=1.0.0",
-# ]
-# [tool.hatch.envs.types.scripts]
-# check = "mypy --install-types --non-interactive {args:src/eyrie tests}"
-
-# # Environment matrix
-# # https://hatch.pypa.io/1.9/config/environment/advanced/#matrix
-# [[tool.hatch.envs.all.matrix]]
-# python = ["3.12",]
-# wagtail = ["6.0",]
 
 #
 # versioningit - https://versioningit.readthedocs.io/
