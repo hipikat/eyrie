@@ -1,4 +1,11 @@
 #!/bin/sh
+#
+# `cd` to the project directory
+#
+
+# cd "$(dirname "$(dirname "$(dirname "$(readlink -f "$0")")")")"
+# echo "moved to: $(dirname "$(dirname "$(dirname "$(readlink -f "$0")")")")"
+
 
 # Check if the script is running in interactive mode
 if [ -t 1 ]; then
