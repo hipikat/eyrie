@@ -22,4 +22,4 @@
 # fi
 
 
-"$(git rev-parse --git-dir)/../scripts/eyrie/update_version.sh" --commit
+$(git rev-parse --git-dir)/../scripts/eyrie/update_version.sh --commit

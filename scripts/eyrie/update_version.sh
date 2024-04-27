@@ -14,23 +14,36 @@
 cd "$(dirname "$(dirname "$(dirname "$(readlink -f "$0")")")")"
 
 update_version() {
-    VERSION=$(versioningit)
-    current_version=$(awk -F= '/^version/ {gsub(/[[:space:]]+/, "", $2); gsub(/"/, "", $2); print $2; exit}' pyproject.toml)
+    # Check if automatic versioning is disabled
+    case "${EYRIE_AUTO_VERSION:-true}" in
+        true|yes|on|1)
+            ;;
+        *)
+            echo "Automatic versioning is disabled."
+            return 0
+            ;;
+    esac
 
-    if [ "$VERSION" = "$current_version" ]; then
-        echo "Current pyproject.toml version $current_version is correct."
+    new_version=$(versioningit)
+    old_version=$(grep '^version = ' "pyproject.toml" | cut -d'"' -f2)
+    last_commit_message=$(git log -1 --pretty=%B)
+
+    if [ "$new_version" = "$old_version" ]; then
+        if ! echo "$last_commit_message" | grep -q "^Updated pyproject.toml to version"; then
+            echo "Current pyproject.toml version $old_version is correct."
+        fi
     else
-        awk -v ver="$VERSION" '
+        awk -v ver="$new_version" '
             /^\[project\]/ { in_project = 1 }
             /^version = / && in_project { print "version = \"" ver "\""; next }
             { print }
         ' "pyproject.toml" > "pyproject.toml.tmp" && mv "pyproject.toml.tmp" "pyproject.toml"
 
-        echo "Updated pyproject.toml to version $VERSION"
+        echo "Updated pyproject.toml to version $new_version"
 
         if [ "$1" = "--commit" ]; then
             git add pyproject.toml
-            git commit -m "Version updated to $VERSION"
+            git commit -m "Version updated to $new_version"
         fi
     fi
 }
