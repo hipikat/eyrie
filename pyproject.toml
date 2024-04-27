@@ -9,7 +9,7 @@ build-backend = "pdm.pep517.api"
 
 [project]
 name = "eyrie"
-version = "0.1.0.dev1+g91557d2"
+version = "0.1.0.dev2+g71e0e21"
 description = "Your SDLC in a bin."
 readme = "README.md"
 requires-python = "<4.0,>=3.12"
