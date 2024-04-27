@@ -1,5 +1,0 @@
-#!/bin/sh
-
-# Update the project version and add a "Version updated..." commit, if needed.
-"$(git rev-parse --git-dir)/../scripts/eyrie/update_version.sh" --commit
-
