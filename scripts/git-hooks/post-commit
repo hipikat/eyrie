@@ -1,10 +1,29 @@
 #!/bin/sh
 #
-# This script updates the version in `pyproject.toml` using `versioningit` and,
-# optionally, commits the change.
+# This script checks for stable release version updates and tags them,
+# then updates the version in `pyproject.toml` using `versioningit`,
+# and optionally commits the change.
 
 # Move to the project directory
 cd "$(dirname "$(dirname "$(dirname "$(readlink -f "$0")")")")"
+
+# Get the current version from pyproject.toml
+current_version=$(grep '^version = ' "pyproject.toml" | cut -d'"' -f2)
+
+# Regular expression to match stable versions (X.Y.Z)
+stable_version_regex='^[0-9]+\.[0-9]+\.[0-9]+$'
+
+# Check if the current version is a stable version and not already tagged
+if echo "$current_version" | grep -qE "$stable_version_regex"; then
+    # Check if a tag for this version already exists
+    if ! git rev-parse "v$current_version" >/dev/null 2>&1; then
+        # Create a new git tag
+        git tag -a "v$current_version" -m "Release version $current_version"
+        echo "New tag created for version $current_version"
+        # Commented out the push command to allow manual push of tags
+        # git push --tags
+    fi
+fi
 
 # Run the version update script and commit changes if necessary
 "$(git rev-parse --git-dir)/../scripts/eyrie/update_version.sh" --commit
