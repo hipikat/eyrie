@@ -9,7 +9,7 @@ build-backend = "pdm.pep517.api"
 
 [project]
 name = "eyrie"
-version = "0.1.0.dev22+gf756f57.dirty"
+version = "v0.0.1"
 description = "Your SDLC in a bin."
 readme = "README.md"
 requires-python = "<4.0,>=3.12"
@@ -155,7 +155,7 @@ distance-dirty = "{next_version}.dev{distance}+{vcs}{rev}.dirty"
 
 [tool.versioningit.vcs]
 method = "git"
+# match = ["v*"]
 
-# Parameters to pass to the method:
-match = ["v*"]
-default-tag = "0.0.1"
+[tool.versioningit.tag2version]
+regex = "^v(\\d+\\.\\d+\\.\\d+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$"
