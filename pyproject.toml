@@ -144,11 +144,11 @@ includes = []
 #
 [tool.versioningit.format]
 # When there have been commits since the most recent tag:
-distance = "{next_version}.dev{distance}+{vcs}{rev}"
+distance = "{version}.dev{distance}+{vcs}{rev}"
 # When there are uncommitted changes:
 dirty = "{version}+dirty"
 # When there are both commits and uncommitted changes:
-distance-dirty = "{next_version}.dev{distance}+{vcs}{rev}.dirty"
+distance-dirty = "{version}.dev{distance}+{vcs}{rev}.dirty"
 
 [tool.versioningit.vcs]
 method = "git"
