@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# This script updates the version in `pyproject.toml` using `versioningit` and,
+# optionally, commits the change.
+
+# Move to the project directory
+cd "$(dirname "$(dirname "$(dirname "$(readlink -f "$0")")")")"
+
+# Run the version update script and commit changes if necessary
+"$(git rev-parse --git-dir)/../scripts/eyrie/update_version.sh" --commit

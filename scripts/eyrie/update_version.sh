@@ -14,6 +14,7 @@
 cd "$(dirname "$(dirname "$(dirname "$(readlink -f "$0")")")")"
 
 update_version() {
+
     # Check if automatic versioning is disabled
     case "${EYRIE_AUTO_VERSION:-true}" in
         true|yes|on|1)
@@ -24,14 +25,20 @@ update_version() {
             ;;
     esac
 
-    new_version=$(versioningit)
-    old_version=$(grep '^version = ' "pyproject.toml" | cut -d'"' -f2)
+    # Fetch the last commit message
     last_commit_message=$(git log -1 --pretty=%B)
 
+    # Check if the last commit was a version update and exit if so
+    if echo "$last_commit_message" | grep -q "^Version updated to"; then
+        echo "Last commit was a version update; skipping to prevent a loop."
+        return 0
+    fi
+
+    new_version=$(versioningit)
+    old_version=$(grep '^version = ' "pyproject.toml" | cut -d'"' -f2)
+
     if [ "$new_version" = "$old_version" ]; then
-        if ! echo "$last_commit_message" | grep -q "^Updated pyproject.toml to version"; then
-            echo "Current pyproject.toml version $old_version is correct."
-        fi
+        echo "Current pyproject.toml version $old_version is correct."
     else
         awk -v ver="$new_version" '
             /^\[project\]/ { in_project = 1 }
