@@ -142,9 +142,6 @@ includes = []
 #
 # versioningit - https://versioningit.readthedocs.io/
 #
-[tool.versioningit]
-default-version = "0.0.0+unknown"
-
 [tool.versioningit.format]
 # When there have been commits since the most recent tag:
 distance = "{next_version}.dev{distance}+{vcs}{rev}"
@@ -155,6 +152,10 @@ distance-dirty = "{next_version}.dev{distance}+{vcs}{rev}.dirty"
 
 [tool.versioningit.vcs]
 method = "git"
+match = ["v*"]
+default-tag = "v0.0.0"
 
 [tool.versioningit.tag2version]
+method="basic"
 regex = "^v(\\d+\\.\\d+\\.\\d+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$"
+require-match = true
