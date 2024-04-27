@@ -3,4 +3,4 @@
 
 import versioningit
 
-__version__ = versioningit.get_version()
+__version__ = "0.1.0.dev22+gf756f57.dirty"

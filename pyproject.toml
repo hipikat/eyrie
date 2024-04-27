@@ -4,12 +4,12 @@
 #
 
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+requires = ["pdm-pep517"]
+build-backend = "pdm.pep517.api"
 
 [project]
 name = "eyrie"
-dynamic = ["version"]
+version = "0.1.0.dev22+gf756f57.dirty"
 description = "Your SDLC in a bin."
 readme = "README.md"
 requires-python = "<4.0,>=3.12"

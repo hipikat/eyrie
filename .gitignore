@@ -23,7 +23,8 @@ terraform.tfvars
 .coverage
 
 # Transient/system files
-*.swp
 *.log
+*.swp
+*.tmp
 .DS_Store
 junk
