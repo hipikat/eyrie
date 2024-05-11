@@ -8,7 +8,7 @@
 
 # Load config for the set of machines defined in config/vagrants.yaml
 require 'yaml'
-vagrants = YAML.load_file('config/vagrants.yaml', aliases: true)
+vagrants = YAML.load_file('../config/vagrants.yaml', aliases: true)
 
 Vagrant.configure("2") do |vagrant_config|
 

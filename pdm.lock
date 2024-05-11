@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:b2150b561d55ed1ca0dac88ef44134970e28896e3ebeac030f896938ea5b1c73"
+content_hash = "sha256:9490e9228cb290c1200f5aa3a5948d049cc784718be550a8c4d1797e28c378e6"
 
 [[package]]
 name = "asttokens"
@@ -144,8 +144,7 @@ files = [
 name = "pexpect"
 version = "4.9.0"
 summary = "Pexpect allows easy control of interactive console applications."
-groups = ["dev"]
-marker = "sys_platform != \"win32\" and sys_platform != \"emscripten\""
+groups = ["default", "dev"]
 dependencies = [
     "ptyprocess>=0.5",
 ]
@@ -183,8 +182,7 @@ files = [
 name = "ptyprocess"
 version = "0.7.0"
 summary = "Run a subprocess in a pseudo terminal"
-groups = ["dev"]
-marker = "sys_platform != \"win32\" and sys_platform != \"emscripten\""
+groups = ["default", "dev"]
 files = [
     {file = "ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35"},
     {file = "ptyprocess-0.7.0.tar.gz", hash = "sha256:5c5d0a3b48ceee0b48485e0c26037c0acd7d29765ca3fbb5cb3831d347423220"},
