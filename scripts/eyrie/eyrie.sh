@@ -6,4 +6,6 @@
 # executable in your Python environment. (Typically for Eyrie developers.))
 #
 
+# TODO: This should try to look for the default virtualenv python maybe??
+
 python "$(dirname "$(dirname "$(dirname "$(readlink -f "$0")")")")/src/eyrie/cli.py"

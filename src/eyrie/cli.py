@@ -4,7 +4,7 @@ import click
 # Define the CLI group
 @click.group()
 def cli():
-    """Simple CLI for managing environments."""
+    """Simple CLI for managing a project's lifecycle."""
     pass
 
 

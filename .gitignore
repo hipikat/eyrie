@@ -25,6 +25,8 @@ terraform.tfvars
 # Transient/system files
 *.log
 *.swp
+*.swo
 *.tmp
+__pycache__
 .DS_Store
 junk
