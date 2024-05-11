@@ -24,4 +24,4 @@ if echo "$current_version" | grep -qE "$stable_version_regex"; then
 fi
 
 # Run the version update script and commit changes if necessary
-"$(git rev-parse --git-dir)/../scripts/eyrie/update_version.sh" --commit
+# "$(git rev-parse --git-dir)/../scripts/eyrie/update_version.sh" --commit
