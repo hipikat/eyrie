@@ -30,7 +30,7 @@ update_version() {
 
     # Check if the last commit was a version update and exit if so
     if echo "$last_commit_message" | grep -q "^Version updated to"; then
-        echo "Last commit was a version update; skipping to prevent a loop."
+        echo "Last commit was already a version update; skipping."
         return 0
     fi
 
