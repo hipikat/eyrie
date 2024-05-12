@@ -7,6 +7,7 @@ package-lock.json
 # Building
 *.egg-info/
 .env
+dist/
 
 # Logs
 npm-debug.log*

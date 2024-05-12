@@ -1,11 +1,12 @@
+import os
+from pprint import pprint
 import sys
 
 import click
 import pexpect
 
-
+from .conf import settings
 from .helpers import run_command
-import os
 
 
 # Define the CLI group
@@ -58,6 +59,9 @@ def version():
         # Handle errors in Pexpect
         click.echo("Error executing versioningit:", err=True)
         click.echo(str(e), err=True)
+
+    print("And here's some settings...")
+    pprint(settings)
 
 
 # Vagrant commands

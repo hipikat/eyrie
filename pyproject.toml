@@ -4,12 +4,12 @@
 #
 
 [build-system]
-requires      = ["pdm-pep517", "versioningit"]
-build-backend = "pdm.pep517.api"
+requires      = ["pdm-backend", "versioningit"]
+build-backend = "pdm.backend"
 
 [project]
 name = "eyrie"
-version = "0.0.4"
+version = "0.0.5"
 description = "Your SDLC in a bin."
 readme = "README.md"
 requires-python = "<4.0,>=3.12"
@@ -27,15 +27,17 @@ dependencies = [
   "click>=8.1.7",
   "versioningit>=3.1.1",
   "pexpect>=4.9.0",
+  "pydantic>=2.7.1",
+  "pydantic-settings>=2.2.1",
 ]
+
+[project.scripts]
+eyrie-cli = "eyrie.cli:cli"
 
 [project.urls]
 Documentation = "https://github.com/hipikat/eyrie#readme"
 Issues        = "https://github.com/hipikat/eyrie/issues"
 Source        = "https://github.com/hipikat/eyrie"
-
-[project.scripts]
-eyrie = "eyrie.cli:cli"
 
 #
 # Coverage - https://coverage.readthedocs.io/
@@ -56,15 +58,12 @@ exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 #
 # PDM (Python Package Management) - https://pdm-project.org/
 #
-[tool.pdm]
-distribution = true
-includes     = ["config/*.yaml"]
+[tool.pdm.build]
+includes = ["config/*.yaml"]
+# package-dir = "src"
 
 [tool.pdm.dev-dependencies]
 dev = ["ipython<9.0.0,>=8.23.0", "pip>=24.0"]
-
-[tool.pdm.build]
-includes = []
 
 #
 # versioningit - https://versioningit.readthedocs.io/

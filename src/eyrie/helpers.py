@@ -1,10 +1,10 @@
 import pexpect
-import click
+import os
 
 
-def run_command(command, expect_end=True, timeout=20):
+def run_command(command, expect_end=True, timeout=None):
     """
-    Runs a shell command using Pexpect and handles outputs and errors.
+    Runs a shell command using Pexpect and ensures the command inherits the environment.
 
     Args:
         command (str): The command to execute.
@@ -14,14 +14,15 @@ def run_command(command, expect_end=True, timeout=20):
     Returns:
         str: The output of the command if successful, None if an error occurred.
     """
+    env = os.environ.copy()  # Copy the current environment
     try:
-        child = pexpect.spawn(command, timeout=timeout)
+        child = pexpect.spawn(command, timeout=timeout, env=env)
         if expect_end:
             child.expect(pexpect.EOF)
         output = child.before.decode().strip()
         return output
     except (pexpect.EOF, pexpect.TIMEOUT) as e:
-        click.echo(f"Command timeout or unexpected end: {str(e)}", err=True)
+        print(f"Command timeout or unexpected end: {e}")
     except pexpect.exceptions.ExceptionPexpect as e:
-        click.echo(f"An error occurred: {str(e)}", err=True)
+        print(f"An error occurred: {e}")
     return None
