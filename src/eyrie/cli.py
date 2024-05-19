@@ -85,7 +85,7 @@ def cli(ctx, debug):
     ctx.debug = debug
 
 
-# Define the "version" command in the CLI group
+# `eyrie version`
 @cli.command()
 @click.option(
     '--committed', 'which', flag_value='committed', help='Last version committed to pyproject.toml'
@@ -94,42 +94,40 @@ def cli(ctx, debug):
     '--current',
     'which',
     flag_value='current',
-    help='Active version, including last commit hash and dirty flag',
+    help='version with last commit hash and dirty flag (default)',
     default=True,
 )
 @click.option('--next', 'which', flag_value='next', help='Next version to be committed')
-@click.option('--write', is_flag=True, help='Write the current version to pyproject.yaml')
+@click.option('--write', is_flag=True, help='Write the version to files')
 def version(which, write):
     """
     Display the current version of the application. "Current" differs from
     "committed" by adding the last commit hash and a 'dirty' flag if there are
     uncommitted changes in the working tree.
     """
+    import versioningit
+
+    errout = ''
     match which:
         case 'committed':
             version = pkg_metadata.version(__name__.split('.')[0])
         case 'current':
-            from versioningit import get_version
-
-            version = get_version()
+            version = versioningit.get_version(write=write)
+            errout += 'Updated project with [tool.versioningit.write] settings\n'
         case 'next':
-            from versioningit import get_next_version
-
-            version = get_next_version()
-
+            version = versioningit.get_next_version()
     click.echo(version)
 
     if write:
-        import tomli
-        import tomli_w
+        from tomlkit import parse, dumps, document, table
 
-        with open(PROJECT_ROOT / 'pyproject.toml', 'rb') as f:
-            pyproject_data = tomli.load(f)
+        with open(PROJECT_ROOT / 'pyproject.toml', 'r') as file:
+            pyproject_data = parse(file.read())
         pyproject_data['project']['version'] = version
-        with open(PROJECT_ROOT / 'pyproject.toml', 'wb') as f:
-            tomli_w.dump(pyproject_data, f)
+        with open(PROJECT_ROOT / 'pyproject.toml', 'w') as file:
+            file.write(dumps(pyproject_data))
 
-        click.echo(f"Wrote version '{version}' to pyproject.toml", err=True)
+        click.echo(errout + f"Wrote version '{version}' to pyproject.toml", err=True)
 
     return version
 
