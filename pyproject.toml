@@ -34,6 +34,9 @@ dependencies = [
 [project.scripts]
 eyrie-cli = "eyrie.cli:cli"
 
+# This entry point group will be used by plugins to register their command groups
+[project.entry-points."eyrie.plugins"]
+
 [project.urls]
 Documentation = "https://github.com/hipikat/eyrie#readme"
 Issues        = "https://github.com/hipikat/eyrie/issues"
@@ -63,7 +66,7 @@ includes = ["config/*.yaml"]
 # package-dir = "src"
 
 [tool.pdm.dev-dependencies]
-dev = ["ipython<9.0.0,>=8.23.0", "pip>=24.0"]
+dev = ["pip>=24.0", "pdbpp>=0.10.3", "bpython>=0.24"]
 
 #
 # versioningit - https://versioningit.readthedocs.io/
@@ -85,3 +88,14 @@ default-tag = "v0.0.0"
 method        = "basic"
 regex         = "^v(\\d+\\.\\d+\\.\\d+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$"
 require-match = true
+
+[tool.ruff]
+line-length    = 100
+indent-width   = 4
+target-version = "py312"
+
+[tool.ruff.format]
+quote-style                = "single"
+indent-style               = "space"
+docstring-code-format      = true
+docstring-code-line-length = "dynamic"
