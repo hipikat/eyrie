@@ -5,14 +5,17 @@ import os
 from importlib import import_module, resources
 from importlib import metadata as pkg_metadata
 from logging import getLogger
+from pathlib import Path
 
 import click
-import pexpect
-
-# from .conf import settings
-from .helpers import run_command
 
 log = getLogger(__name__)
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+while PROJECT_ROOT != PROJECT_ROOT.root:
+    if (PROJECT_ROOT / 'pyproject.toml').exists():
+        break
+    PROJECT_ROOT = PROJECT_ROOT.parent
 
 PLUGIN_ENTRYPOINT = 'eyrie.plugins'
 APPROVED_PLUGINS = ('example_plugin',)
@@ -65,7 +68,6 @@ class EyrieCLI(click.Group):
                 )
 
     def parse_args(self, ctx, args):
-        # Parse global options like --debug here
         if '--debug' in args:
             self.debug = True
             args.remove('--debug')
@@ -85,18 +87,51 @@ def cli(ctx, debug):
 
 # Define the "version" command in the CLI group
 @cli.command()
-def version():
-    """Displays the version by executing 'versioningit'."""
-    try:
-        # Using Pexpect to run versioningit and capture output
-        child = pexpect.spawn('versioningit')
-        child.expect(pexpect.EOF)
-        output = child.before.decode().strip()
-        click.echo(output)
-    except pexpect.exceptions.ExceptionPexpect as e:
-        # Handle errors in Pexpect
-        click.echo('Error executing versioningit:', err=True)
-        click.echo(str(e), err=True)
+@click.option(
+    '--committed', 'which', flag_value='committed', help='Last version committed to pyproject.toml'
+)
+@click.option(
+    '--current',
+    'which',
+    flag_value='current',
+    help='Active version, including last commit hash and dirty flag',
+    default=True,
+)
+@click.option('--next', 'which', flag_value='next', help='Next version to be committed')
+@click.option('--write', is_flag=True, help='Write the current version to pyproject.yaml')
+def version(which, write):
+    """
+    Display the current version of the application. "Current" differs from
+    "committed" by adding the last commit hash and a 'dirty' flag if there are
+    uncommitted changes in the working tree.
+    """
+    match which:
+        case 'committed':
+            version = pkg_metadata.version(__name__.split('.')[0])
+        case 'current':
+            from versioningit import get_version
+
+            version = get_version()
+        case 'next':
+            from versioningit import get_next_version
+
+            version = get_next_version()
+
+    click.echo(version)
+
+    if write:
+        import tomli
+        import tomli_w
+
+        with open(PROJECT_ROOT / 'pyproject.toml', 'rb') as f:
+            pyproject_data = tomli.load(f)
+        pyproject_data['project']['version'] = version
+        with open(PROJECT_ROOT / 'pyproject.toml', 'wb') as f:
+            tomli_w.dump(pyproject_data, f)
+
+        click.echo(f"Wrote version '{version}' to pyproject.toml", err=True)
+
+    return version
 
 
 if __name__ == '__main__':

@@ -1,101 +1,115 @@
-#
-# Python build system configuration
-# https://peps.python.org/pep-0518/
-#
-
 [build-system]
-requires      = ["pdm-backend", "versioningit"]
+requires = [
+    "pdm-backend",
+    "versioningit",
+]
 build-backend = "pdm.backend"
 
 [project]
 name = "eyrie"
-version = "0.0.5"
+version = "0.0.5.dev1+g49b965a.dirty"
 description = "Your SDLC in a bin."
 readme = "README.md"
 requires-python = "<4.0,>=3.12"
-license = { text = "MIT" }
 keywords = []
-authors = [{ name = "Ada Wright", email = "ada@hpk.io" }]
+authors = [
+    { name = "Ada Wright", email = "ada@hpk.io" },
+]
 classifiers = [
-  "Development Status :: 4 - Beta",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: Implementation :: CPython",
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
 ]
 dependencies = [
-  "pyyaml>=6.0.1",
-  "click>=8.1.7",
-  "versioningit>=3.1.1",
-  "pexpect>=4.9.0",
-  "pydantic>=2.7.1",
-  "pydantic-settings>=2.2.1",
+    "pyyaml>=6.0.1",
+    "click>=8.1.7",
+    "versioningit>=3.1.1",
+    "pexpect>=4.9.0",
+    "pydantic>=2.7.1",
+    "pydantic-settings>=2.2.1",
+    "tomli>=2.0.1",
+    "tomli-w>=1.0.0",
 ]
+
+[project.license]
+text = "MIT"
 
 [project.scripts]
 eyrie-cli = "eyrie.cli:cli"
 
-# This entry point group will be used by plugins to register their command groups
-[project.entry-points."eyrie.plugins"]
-
 [project.urls]
 Documentation = "https://github.com/hipikat/eyrie#readme"
-Issues        = "https://github.com/hipikat/eyrie/issues"
-Source        = "https://github.com/hipikat/eyrie"
+Issues = "https://github.com/hipikat/eyrie/issues"
+Source = "https://github.com/hipikat/eyrie"
 
-#
-# Coverage - https://coverage.readthedocs.io/
-#
 [tool.coverage.run]
-source_pkgs = ["eyrie", "tests"]
-branch      = true
-parallel    = true
-omit        = ["src/eyrie/__about__.py"]
+source_pkgs = [
+    "eyrie",
+    "tests",
+]
+branch = true
+parallel = true
+omit = [
+    "src/eyrie/__about__.py",
+]
 
 [tool.coverage.paths]
-eyrie = ["src/eyrie", "*/eyrie/src/eyrie"]
-tests = ["tests", "*/eyrie/tests"]
+eyrie = [
+    "src/eyrie",
+    "*/eyrie/src/eyrie",
+]
+tests = [
+    "tests",
+    "*/eyrie/tests",
+]
 
 [tool.coverage.report]
-exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
+exclude_lines = [
+    "no cov",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
 
-#
-# PDM (Python Package Management) - https://pdm-project.org/
-#
 [tool.pdm.build]
-includes = ["config/*.yaml"]
-# package-dir = "src"
+includes = [
+    "config/*.yaml",
+]
 
 [tool.pdm.dev-dependencies]
-dev = ["pip>=24.0", "pdbpp>=0.10.3", "bpython>=0.24"]
+dev = [
+    "pip>=24.0",
+    "pdbpp>=0.10.3",
+    "bpython>=0.24",
+]
 
-#
-# versioningit - https://versioningit.readthedocs.io/
-#
 [tool.versioningit.format]
-# When there have been commits since the most recent tag:
 distance = "{version}.dev{distance}+{vcs}{rev}"
-# When there are uncommitted changes:
 dirty = "{version}+dirty"
-# When there are both commits and uncommitted changes:
 distance-dirty = "{version}.dev{distance}+{vcs}{rev}.dirty"
 
 [tool.versioningit.vcs]
-method      = "git"
-match       = ["v*"]
+method = "git"
+match = [
+    "v*",
+]
 default-tag = "v0.0.0"
 
 [tool.versioningit.tag2version]
-method        = "basic"
-regex         = "^v(\\d+\\.\\d+\\.\\d+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$"
+method = "basic"
+regex = "^v(\\d+\\.\\d+\\.\\d+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$"
 require-match = true
 
+[tool.versioningit.write]
+file = "src/eyrie/__version__.py"
+
 [tool.ruff]
-line-length    = 100
-indent-width   = 4
+line-length = 100
+indent-width = 4
 target-version = "py312"
 
 [tool.ruff.format]
-quote-style                = "single"
-indent-style               = "space"
-docstring-code-format      = true
+quote-style = "single"
+indent-style = "space"
+docstring-code-format = true
 docstring-code-line-length = "dynamic"
