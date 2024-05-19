@@ -88,7 +88,7 @@ def cli(ctx, debug):
 # `eyrie version`
 @cli.command()
 @click.option(
-    '--committed', 'which', flag_value='committed', help='Last version committed to pyproject.toml'
+    '--package', 'which', flag_value='package', help='Version according to the package metadata'
 )
 @click.option(
     '--current',
@@ -97,25 +97,39 @@ def cli(ctx, debug):
     help='version with last commit hash and dirty flag (default)',
     default=True,
 )
-@click.option('--next', 'which', flag_value='next', help='Next version to be committed')
+@click.option('--next-patch', 'which', flag_value='next-patch', help='Next patch version')
+@click.option('--next-minor', 'which', flag_value='next-minor', help='Next minor version')
+@click.option('--next-major', 'which', flag_value='next-major', help='Next major version')
 @click.option('--write', is_flag=True, help='Write the version to files')
 def version(which, write):
     """
     Display the current version of the application. "Current" differs from
-    "committed" by adding the last commit hash and a 'dirty' flag if there are
+    "package" by adding the last commit hash and a 'dirty' flag if there are
     uncommitted changes in the working tree.
     """
     import versioningit
 
     errout = ''
+    version = 'Unknown'
+    pkg_version = pkg_metadata.version(__name__.split('.')[0])
     match which:
-        case 'committed':
-            version = pkg_metadata.version(__name__.split('.')[0])
+        case 'package':
+            version = pkg_version
         case 'current':
             version = versioningit.get_version(write=write)
             errout += 'Updated project with [tool.versioningit.write] settings\n'
-        case 'next':
+        case 'next-minor':
             version = versioningit.get_next_version()
+        case 'next-patch' | 'next-major':
+            from semver import VersionInfo
+
+            sem_ver = VersionInfo.parse(pkg_version)
+            bump_fn = 'bump_' + which.split('-')[1]
+            next_sem_ver = getattr(sem_ver, bump_fn)()
+            version = str(next_sem_ver)
+        case _:
+            breakpoint()
+
     click.echo(version)
 
     if write:

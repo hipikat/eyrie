@@ -4,7 +4,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "eyrie"
-version = "0.0.1.dev1+g3ce83c3.dirty"
+version = "0.0.1.dev2+g5e8b84c"
 description = "Your SDLC in a bin."
 readme = "README.md"
 requires-python = "<4.0,>=3.12"
