@@ -88,24 +88,25 @@ def cli(ctx, debug):
 # `eyrie version`
 @cli.command()
 @click.option(
-    '--package', 'which', flag_value='package', help='Version according to the package metadata'
-)
-@click.option(
     '--current',
     'which',
     flag_value='current',
-    help='version with last commit hash and dirty flag (default)',
+    help='Version including last commit hash and dirty flag (default)',
     default=True,
 )
+@click.option(
+    '--package', 'which', flag_value='package', help='Version according to the package metadata'
+)
+@click.option('--next', 'which', flag_value='next', help='Next version according to versioningit')
 @click.option('--next-patch', 'which', flag_value='next-patch', help='Next patch version')
 @click.option('--next-minor', 'which', flag_value='next-minor', help='Next minor version')
 @click.option('--next-major', 'which', flag_value='next-major', help='Next major version')
 @click.option('--write', is_flag=True, help='Write the version to files')
 def version(which, write):
     """
-    Display the current version of the application. "Current" differs from
-    "package" by adding the last commit hash and a 'dirty' flag if there are
-    uncommitted changes in the working tree.
+    Display the project version. The `--write` flag will attempt to use the
+    `versioningit` setup from `pyproject.toml`, and update the project version
+    in `pyproject.toml`, if it exists.
     """
     import versioningit
 
@@ -117,10 +118,10 @@ def version(which, write):
             version = pkg_version
         case 'current':
             version = versioningit.get_version(write=write)
-            errout += 'Updated project with [tool.versioningit.write] settings\n'
-        case 'next-minor':
+            errout += '- Updated project with [tool.versioningit.write] settings\n'
+        case 'next':
             version = versioningit.get_next_version()
-        case 'next-patch' | 'next-major':
+        case 'next-patch' | 'next-minor' | 'next-major':
             from semver import VersionInfo
 
             sem_ver = VersionInfo.parse(pkg_version)
@@ -133,15 +134,19 @@ def version(which, write):
     click.echo(version)
 
     if write:
-        from tomlkit import parse, dumps, document, table
+        from tomlkit import parse, dumps
 
-        with open(PROJECT_ROOT / 'pyproject.toml', 'r') as file:
-            pyproject_data = parse(file.read())
-        pyproject_data['project']['version'] = version
-        with open(PROJECT_ROOT / 'pyproject.toml', 'w') as file:
-            file.write(dumps(pyproject_data))
-
-        click.echo(errout + f"Wrote version '{version}' to pyproject.toml", err=True)
+        try:
+            with open(PROJECT_ROOT / 'pyproject.toml', 'r') as file:
+                pyproject_data = parse(file.read())
+            pyproject_data['project']['version'] = version
+            with open(PROJECT_ROOT / 'pyproject.toml', 'w') as file:
+                file.write(dumps(pyproject_data))
+        finally:
+            if which != 'current':
+                version = versioningit.get_version(write=write)
+                errout += '- Updated project with [tool.versioningit.write] settings\n'
+            click.echo(f"{errout}- Wrote version '{version}' to pyproject.toml", err=True)
 
     return version
 
