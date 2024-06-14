@@ -1,3 +1,4 @@
+import os
 import click
 
 
@@ -9,12 +10,12 @@ def vagrant():
 
 
 @vagrant.command()
-@click.argument("command", default="status", required=False)
+@click.argument('command', default='status', required=False)
 def cmd(command):
     """Runs a Vagrant command."""
     # Ensure we are in the correct directory
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    output = run_command(f"vagrant {command}")
+    output = run_command(f'vagrant {command}')
     if output:
         click.echo(output)
 
