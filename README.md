@@ -8,6 +8,4 @@ Wherein I set up a little space for myself on the web, and learn a bunch of stuf
 
 ## Getting started
 
-1. Getting started
-
 - Activate your virtualenv: `pdm venv activate`
