@@ -1,0 +1,17 @@
+services:
+  eyrie-dev:
+    build:
+      context: .
+      target: dev
+    volumes:
+      - .:/app
+    command: /bin/bash -c "source /opt/venv/bin/activate && pytest -m dev"
+
+  eyrie-dist:
+    build:
+      context: .
+      target: dist
+    volumes:
+      - .:/app
+    command: /bin/bash -c "source /opt/venv/bin/activate && pytest -m dist"
+

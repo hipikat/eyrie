@@ -30,3 +30,18 @@ def dist_env(tmp_path_factory):
     # Teardown code if necessary
     os.environ.pop('EYRIE_ENV')
     shutil.rmtree(venv_path)
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        '--env', action='store', default='dev', help='environment to run tests: dev or dist'
+    )
+
+
+@pytest.fixture(scope='session', autouse=True)
+def setup_environment(request):
+    env = request.config.getoption('--env')
+    if env == 'dev':
+        request.getfixturevalue('dev_environment')
+    elif env == 'dist':
+        request.getfixturevalue('dist_environment')

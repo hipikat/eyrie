@@ -8,7 +8,7 @@
 
 # Load config for the set of machines defined in config/vagrants.yaml
 require 'yaml'
-vagrants = YAML.load_file('../config/vagrants.yaml', aliases: true)
+vagrants = YAML.load_file('config/vagrants.yaml', aliases: true)
 
 Vagrant.configure("2") do |vagrant_config|
 
@@ -40,8 +40,8 @@ Vagrant.configure("2") do |vagrant_config|
     end
 
     # Synchronise Salt states and pillars
-    vm.vm.synced_folder "./config/salt/states", "/srv/salt"
-    vm.vm.synced_folder "./config/salt/pillars", "/srv/pillar"
+    vm.vm.synced_folder "./salt/states", "/srv/salt"
+    vm.vm.synced_folder "./salt/pillars", "/srv/pillar"
 
     # Sync folders listed in the vm config
     do_hash_pairs(vm_config['folder_mappings']) do |host_folder, vm_folder|
