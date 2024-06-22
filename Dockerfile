@@ -1,10 +1,11 @@
-# Base image for development & debugging containers
+# Base image for development & debug containers
 FROM ubuntu:noble-20240605 AS base-dev
 ENV LANG en_AU.UTF-8
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && apt-get install -y \
-    python3 python3-pip python3-venv
+    python3 python3-pip python3-venv \
+    git
     # && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/
@@ -24,8 +25,6 @@ ENV EYRIE_DEBUG=true
 ENV DJANGO_SETTINGS_MODULE=eyrie.web.settings.dev
 
 COPY / /app/
-
-EXPOSE 8060/tcp
 
 # # Install pipx and pdm using a virtual environment
 # RUN python3 -m venv /opt/venv \
@@ -47,4 +46,5 @@ EXPOSE 8060/tcp
 #     && cat /install-log.txt
 
 # Command to run tests (will be overwritten when running container)
+EXPOSE 8060/tcp
 CMD ["bash"]

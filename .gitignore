@@ -1,5 +1,8 @@
 # Managed applications
-src/picata
+# src/picata
+
+# Environment
+.venv
 
 # Lockfiles
 package-lock.json
