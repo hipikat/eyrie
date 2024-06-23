@@ -1,0 +1,4 @@
+platforms:
+  dev:
+    engine: docker
+

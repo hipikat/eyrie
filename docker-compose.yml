@@ -1,17 +1,29 @@
+
 services:
-  eyrie-dev:
+  dev: &dev
+    container_name: ${PROJECT_NAME}_dev
     build:
       context: .
       target: dev
     volumes:
       - .:/app
-    command: /bin/bash -c "source /opt/venv/bin/activate && pytest -m dev"
+    ports:
+      - "8060:8060"
+    environment:
+      - HOST_USERNAME=${admin_user}
+      - HOST_UID=${admin_UID}
+      - HOST_GID=${admin_GID}
+    command: "python3 -m http.server 8060"
 
-  eyrie-dist:
-    build:
-      context: .
-      target: dist
-    volumes:
-      - .:/app
-    command: /bin/bash -c "source /opt/venv/bin/activate && pytest -m dist"
+  # vscode-dev:
+  #   <<: *dev
+  #   command: /bin/bash -c "source /app/.venv/bin/activate && pytest -m dev"
 
+  # vscode-dev:
+  #   build:
+  #     context: .
+  #     target: dev
+  #   image: eyrie-dev:latest
+  #   volumes:
+  #     - .:/app
+  #   command: /bin/bash -c "source /app/.venv/bin/activate && pytest -m dev"
